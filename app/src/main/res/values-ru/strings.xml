@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TodoListCompose</string>
+    <string name="today">Сегодня</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="future">Будущие</string>
+    <string name="current">Current</string>
+    <string name="i_want">I want...</string>
+</resources>
