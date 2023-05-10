@@ -16,10 +16,13 @@ interface TodoListDao {
     @Delete
     suspend fun deleteTodo(todo: Todo)
 
-    @Query("SELECT * FROM todo WHERE must_be_done_at = DATE() ORDER BY is_done ASC")
+    @Query("SELECT * FROM todo WHERE due_date = DATE() ORDER BY is_done ASC")
     fun selectTodayTodos(): Flow<List<Todo>>
 
-    @Query("SELECT * FROM todo WHERE must_be_done_at = DATE('NOW', '+1 DAY') ORDER BY is_done ASC")
+    @Query("SELECT * FROM todo WHERE due_date = DATE('NOW', '+1 DAY') ORDER BY is_done ASC")
     fun selectTomorrowTodos(): Flow<List<Todo>>
+
+    @Query("SELECT * FROM todo WHERE due_date = ''")
+    fun selectFutureTodos(): Flow<List<Todo>>
 
 }

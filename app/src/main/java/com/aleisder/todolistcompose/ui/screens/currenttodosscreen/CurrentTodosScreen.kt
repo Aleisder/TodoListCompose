@@ -6,8 +6,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,19 +15,21 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aleisder.todolistcompose.R
 import com.aleisder.todolistcompose.model.Todo
 import com.aleisder.todolistcompose.model.TodoEvent
 import com.aleisder.todolistcompose.model.TodoState
 import com.aleisder.todolistcompose.ui.theme.TitleTextStyle
-import com.aleisder.todolistcompose.util.DateConverter
 
 @Composable
 fun CurrentTodosScreen(
@@ -46,21 +46,30 @@ fun CurrentTodosScreen(
             TodoList(
                 title = R.string.today,
                 todos = state.todayTodos,
-                setDueDate = { onEvent(TodoEvent.SetDueDate(DateConverter.getTodayDate())) },
+                setDueDate = { onEvent(TodoEvent.SetTodayDate) },
+                isExpanded = state.isTodayExpanded,
+                onExpand = { onEvent(TodoEvent.ExpandToday) },
+                onCollapse = { onEvent(TodoEvent.CollapseToday)},
                 state = state,
                 onEvent = onEvent
             )
             TodoList(
                 title = R.string.tomorrow,
                 todos = state.tomorrowTodos,
-                setDueDate = { onEvent(TodoEvent.SetDueDate(DateConverter.getTomorrowDate())) },
+                setDueDate = { onEvent(TodoEvent.SetTomorrowDate) },
+                isExpanded = state.isTomorrowExpanded,
+                onExpand = { onEvent(TodoEvent.ExpandTomorrow) },
+                onCollapse = { onEvent(TodoEvent.CollapseTomorrow)},
                 state = state,
                 onEvent = onEvent
             )
             TodoList(
                 title = R.string.future,
-                todos = emptyList(),
-                setDueDate = { onEvent(TodoEvent.SetDueDate(DateConverter.getTodayDate())) },
+                todos = state.futureTodos,
+                setDueDate = { onEvent(TodoEvent.SetUnknownDate) },
+                isExpanded = state.isFutureExpanded,
+                onExpand = { onEvent(TodoEvent.ExpandFuture) },
+                onCollapse = { onEvent(TodoEvent.CollapseFuture)},
                 state = state,
                 onEvent = onEvent
             )
@@ -74,12 +83,12 @@ fun TodoList(
     @StringRes title: Int,
     todos: List<Todo>,
     setDueDate: () -> Unit,
+    isExpanded: Boolean,
+    onExpand: () -> Unit,
+    onCollapse: () -> Unit,
     state: TodoState,
     onEvent: (TodoEvent) -> Unit
 ) {
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
 
     if (state.isAddingTodo) {
         AddTodoDialog(
@@ -99,7 +108,7 @@ fun TodoList(
                 text = stringResource(title),
                 style = TitleTextStyle,
                 modifier = Modifier.clickable {
-                    isExpanded = !isExpanded
+                    if (isExpanded) { onCollapse() } else { onExpand() }
                 }
             )
 
@@ -124,7 +133,6 @@ fun TodoList(
                 items(todos) { todoItem ->
                     TodoItem(
                         todo = todoItem,
-                        state = state,
                         onEvent = onEvent
                     )
                 }
@@ -138,7 +146,6 @@ fun TodoList(
 @Composable
 fun TodoItem(
     todo: Todo,
-    state: TodoState,
     onEvent: (TodoEvent) -> Unit
 ) {
 
@@ -178,8 +185,6 @@ fun TodoItem(
                     }
                 )
             }
-
-
         }
 
         AnimatedVisibility(
@@ -193,14 +198,6 @@ fun TodoItem(
             )
         }
 
-
     }
 
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CurrentTodosScreenPreview() {
-    //CurrentTodosScreen(viewModel = TodoListViewModel(dao = ))
 }

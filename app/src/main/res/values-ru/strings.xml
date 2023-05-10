@@ -4,6 +4,7 @@
     <string name="today">Сегодня</string>
     <string name="tomorrow">Завтра</string>
     <string name="future">Будущие</string>
-    <string name="current">Current</string>
-    <string name="i_want">I want...</string>
+    <string name="current">Текущие</string>
+    <string name="i_want">Я хочу…</string>
+    <string name="add">Добавить</string>
 </resources>

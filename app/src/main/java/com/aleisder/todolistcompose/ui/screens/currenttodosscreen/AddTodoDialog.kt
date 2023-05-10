@@ -7,8 +7,10 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.aleisder.todolistcompose.R
 import com.aleisder.todolistcompose.model.TodoEvent
 import com.aleisder.todolistcompose.model.TodoState
 import com.aleisder.todolistcompose.ui.theme.Shapes
@@ -19,6 +21,7 @@ fun AddTodoDialog(
     state: TodoState,
     onEvent: (TodoEvent) -> Unit
 ) {
+
     Dialog(
         onDismissRequest = {
             onEvent(TodoEvent.HideDialog)
@@ -61,9 +64,10 @@ fun AddTodoDialog(
                         onClick = {
                             onEvent(TodoEvent.SaveTodo)
                         },
+                        enabled = state.title.length > 1,
                         shape = Shapes.small
                     ) {
-                        Text(text = "Add")
+                        Text(text = stringResource(id = R.string.add))
                     }
 
                 }

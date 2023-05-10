@@ -6,6 +6,7 @@ import com.aleisder.todolistcompose.repository.TodoListDao
 import com.aleisder.todolistcompose.model.Todo
 import com.aleisder.todolistcompose.model.TodoEvent
 import com.aleisder.todolistcompose.model.TodoState
+import com.aleisder.todolistcompose.util.DateConverter
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -31,10 +32,24 @@ class TodoListViewModel(
             initialValue = emptyList()
         )
 
-    val state = combine(_state, _todayTodos, _tomorrowTodos) { state, todayTodos, tomorrowTodos ->
+    private val _futureTodos = dao
+        .selectFutureTodos()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = emptyList()
+        )
+
+    val state = combine(
+        _state,
+        _todayTodos,
+        _tomorrowTodos,
+        _futureTodos
+    ) { state, todayTodos, tomorrowTodos, futureTodos ->
         state.copy(
             todayTodos = todayTodos,
-            tomorrowTodos = tomorrowTodos
+            tomorrowTodos = tomorrowTodos,
+            futureTodos = futureTodos
         )
     }.stateIn(
         scope = viewModelScope,
@@ -59,7 +74,7 @@ class TodoListViewModel(
                             Todo(
                                 title = title,
                                 note = description,
-                                must_be_done_at = dueDate
+                                dueDate = dueDate
                             )
                         )
                     }
@@ -84,9 +99,6 @@ class TodoListViewModel(
             is TodoEvent.SetTitle -> {
                 _state.update { it.copy(title = event.title) }
             }
-            is TodoEvent.SetDueDate -> {
-                _state.update { it.copy(dueDate = event.dueDate) }
-            }
             is TodoEvent.ChangeIsChecked -> {
                 viewModelScope.launch {
                     dao.updateIsDone(
@@ -105,12 +117,51 @@ class TodoListViewModel(
                     it.copy(isShowingDetails = true)
                 }
             }
-        }
-    }
-
-    fun updateIsDone(id: Int, isDone: Boolean) {
-        viewModelScope.launch {
-            dao.updateIsDone(id, isDone)
+            TodoEvent.SetTodayDate -> {
+                _state.update {
+                    it.copy(dueDate = DateConverter.getTodayDate())
+                }
+            }
+            TodoEvent.SetTomorrowDate -> {
+                _state.update {
+                    it.copy(dueDate = DateConverter.getTomorrowDate())
+                }
+            }
+            TodoEvent.SetUnknownDate -> {
+                _state.update {
+                    it.copy(dueDate = "")
+                }
+            }
+            TodoEvent.CollapseFuture -> {
+                _state.update {
+                    it.copy(isFutureExpanded = false)
+                }
+            }
+            TodoEvent.CollapseToday -> {
+                _state.update {
+                    it.copy(isTodayExpanded = false)
+                }
+            }
+            TodoEvent.CollapseTomorrow -> {
+                _state.update {
+                    it.copy(isTomorrowExpanded = false)
+                }
+            }
+            TodoEvent.ExpandFuture -> {
+                _state.update {
+                    it.copy(isFutureExpanded = true)
+                }
+            }
+            TodoEvent.ExpandToday -> {
+                _state.update {
+                    it.copy(isTodayExpanded = true)
+                }
+            }
+            TodoEvent.ExpandTomorrow -> {
+                _state.update {
+                    it.copy(isTomorrowExpanded = true)
+                }
+            }
         }
     }
 

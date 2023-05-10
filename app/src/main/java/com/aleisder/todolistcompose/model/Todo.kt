@@ -16,5 +16,5 @@ data class Todo(
 
     val note: String,
 
-    val must_be_done_at: String
+    @ColumnInfo(name = "due_date") val dueDate: String
 )

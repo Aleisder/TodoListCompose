@@ -8,7 +8,7 @@ import com.aleisder.todolistcompose.model.Todo
 
 @Database(
     entities = [Todo::class],
-    version = 2
+    version = 3
 )
 abstract class TodoListDatabase : RoomDatabase() {
 
