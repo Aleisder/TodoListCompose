@@ -8,3 +8,4 @@ fun LocalDate.toSqlDateFormat(): String {
         .ofPattern("yyyy-MM-dd")
         .format(this)
 }
+

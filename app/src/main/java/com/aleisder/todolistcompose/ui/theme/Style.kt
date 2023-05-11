@@ -21,3 +21,8 @@ val DetailedTodoCardShape = RoundedCornerShape(
     topStart = 15.dp,
     topEnd = 15.dp
 )
+
+val TodoListItemTextStyle = TextStyle(
+    fontFamily = CarlitoFamily,
+    fontSize = 16.sp
+)

@@ -1,5 +1,6 @@
 package com.aleisder.todolistcompose.ui.screens.currenttodosscreen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.OutlinedButton
@@ -41,6 +42,11 @@ fun AddTodoDialog(
                     onValueChange = {
                         onEvent(TodoEvent.SetTitle(it))
                     },
+                    label = {
+                        AnimatedVisibility(visible = state.title.isEmpty()) {
+                            Text(text = stringResource(id = R.string.i_want))
+                        }
+                    },
                     shape = Shapes.small,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -49,6 +55,11 @@ fun AddTodoDialog(
                     value = state.description,
                     onValueChange = {
                         onEvent(TodoEvent.SetDescription(it))
+                    },
+                    label = {
+                        AnimatedVisibility(visible = state.title.isEmpty()) {
+                            Text(text = stringResource(id = R.string.how_can_I_do_it))
+                        }
                     },
                     shape = Shapes.small,
                     modifier = Modifier

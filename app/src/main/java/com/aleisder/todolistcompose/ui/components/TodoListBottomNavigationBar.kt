@@ -1,13 +1,11 @@
 package com.aleisder.todolistcompose.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -25,15 +23,11 @@ fun TodoListBottomNavigationBar(
     navController: NavController
 ) {
     BottomNavigation(
-        backgroundColor = Color.White,
-        elevation = 1.dp,
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 3.dp,
         modifier = Modifier
+            .background(MaterialTheme.colors.background)
             .clip(NavigationBarCornerShape)
-            .border(
-                width = 1.dp,
-                color = Green500,
-                shape = NavigationBarCornerShape
-            )
     ) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
@@ -54,7 +48,7 @@ fun TodoListBottomNavigationBar(
                 label = {
                     Text(text = it.title)
                 },
-                selectedContentColor = Green500,
+                selectedContentColor = MaterialTheme.colors.primary,
                 unselectedContentColor = Color.LightGray
             )
         }

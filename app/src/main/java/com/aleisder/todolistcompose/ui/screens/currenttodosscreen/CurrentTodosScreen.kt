@@ -30,6 +30,7 @@ import com.aleisder.todolistcompose.model.Todo
 import com.aleisder.todolistcompose.model.TodoEvent
 import com.aleisder.todolistcompose.model.TodoState
 import com.aleisder.todolistcompose.ui.theme.TitleTextStyle
+import com.aleisder.todolistcompose.ui.theme.TodoListItemTextStyle
 
 @Composable
 fun CurrentTodosScreen(
@@ -37,45 +38,44 @@ fun CurrentTodosScreen(
     onEvent: (TodoEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
+
+    Column(
         modifier = modifier
             .fillMaxSize()
             .padding(top = 20.dp, start = 15.dp, end = 15.dp)
     ) {
-        Column {
-            TodoList(
-                title = R.string.today,
-                todos = state.todayTodos,
-                setDueDate = { onEvent(TodoEvent.SetTodayDate) },
-                isExpanded = state.isTodayExpanded,
-                onExpand = { onEvent(TodoEvent.ExpandToday) },
-                onCollapse = { onEvent(TodoEvent.CollapseToday)},
-                state = state,
-                onEvent = onEvent
-            )
-            TodoList(
-                title = R.string.tomorrow,
-                todos = state.tomorrowTodos,
-                setDueDate = { onEvent(TodoEvent.SetTomorrowDate) },
-                isExpanded = state.isTomorrowExpanded,
-                onExpand = { onEvent(TodoEvent.ExpandTomorrow) },
-                onCollapse = { onEvent(TodoEvent.CollapseTomorrow)},
-                state = state,
-                onEvent = onEvent
-            )
-            TodoList(
-                title = R.string.future,
-                todos = state.futureTodos,
-                setDueDate = { onEvent(TodoEvent.SetUnknownDate) },
-                isExpanded = state.isFutureExpanded,
-                onExpand = { onEvent(TodoEvent.ExpandFuture) },
-                onCollapse = { onEvent(TodoEvent.CollapseFuture)},
-                state = state,
-                onEvent = onEvent
-            )
-        }
-
+        TodoList(
+            title = R.string.today,
+            todos = state.todayTodos,
+            setDueDate = { onEvent(TodoEvent.SetTodayDate) },
+            isExpanded = state.isTodayExpanded,
+            onExpand = { onEvent(TodoEvent.ExpandToday) },
+            onCollapse = { onEvent(TodoEvent.CollapseToday) },
+            state = state,
+            onEvent = onEvent
+        )
+        TodoList(
+            title = R.string.tomorrow,
+            todos = state.tomorrowTodos,
+            setDueDate = { onEvent(TodoEvent.SetTomorrowDate) },
+            isExpanded = state.isTomorrowExpanded,
+            onExpand = { onEvent(TodoEvent.ExpandTomorrow) },
+            onCollapse = { onEvent(TodoEvent.CollapseTomorrow) },
+            state = state,
+            onEvent = onEvent
+        )
+        TodoList(
+            title = R.string.future,
+            todos = state.futureTodos,
+            setDueDate = { onEvent(TodoEvent.SetUnknownDate) },
+            isExpanded = state.isFutureExpanded,
+            onExpand = { onEvent(TodoEvent.ExpandFuture) },
+            onCollapse = { onEvent(TodoEvent.CollapseFuture) },
+            state = state,
+            onEvent = onEvent
+        )
     }
+
 }
 
 @Composable
@@ -108,7 +108,11 @@ fun TodoList(
                 text = stringResource(title),
                 style = TitleTextStyle,
                 modifier = Modifier.clickable {
-                    if (isExpanded) { onCollapse() } else { onExpand() }
+                    if (isExpanded) {
+                        onCollapse()
+                    } else {
+                        onExpand()
+                    }
                 }
             )
 
@@ -117,6 +121,7 @@ fun TodoList(
             Icon(
                 Icons.Filled.Add,
                 contentDescription = null,
+                tint = MaterialTheme.colors.primary,
                 modifier = Modifier.clickable {
                     setDueDate()
                     onEvent(TodoEvent.ShowDialog)
@@ -161,11 +166,15 @@ fun TodoItem(
                 checked = todo.isDone,
                 onCheckedChange = {
                     onEvent(TodoEvent.ChangeIsChecked(todo))
-                }
+                },
+                colors = CheckboxDefaults.colors(
+                    MaterialTheme.colors.primary
+                )
             )
             Text(
                 text = todo.title,
-                color = if (todo.isDone) Color.Gray else Color.Black,
+                style = TodoListItemTextStyle,
+                color = if (todo.isDone) Color.Gray else MaterialTheme.colors.onPrimary,
                 modifier = Modifier.clickable {
                     onEvent(TodoEvent.ShowTodoDetails)
                 }
